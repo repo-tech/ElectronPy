@@ -1,0 +1,37 @@
+name: ElectronPy 0.0.1 release validation
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build ElectronPy
+        run: cargo build --release --bin electronpy
+
+      - name: Validate same-output fairness case
+        run: bash scripts/verify_same_output.sh
+
+      - name: Run benchmark matrix
+        run: python benchmarks/benchmark_matrix.py --runtime all --repeats 1
+
+      - name: Upload runtime matrix JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-matrix
+          path: benchmarks/results/runtime_matrix.json

@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        toolchain: [ stable-x86_64-pc-windows-gnu, stable-x86_64-pc-windows-msvc ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.toolchain }}
+          profile: minimal
+          override: true
+
+      - name: Install dependencies (GNU linker)
+        if: matrix.toolchain == 'stable-x86_64-pc-windows-gnu'
+        run: |
+          choco install mingw -y
+          echo "C:\\ProgramData\\chocolatey\\lib\\mingw\\tools\\install\\mingw64\\bin" >> $GITHUB_PATH
+
+      - name: Cargo build (release)
+        run: cargo build --release --target ${{ matrix.toolchain }}
+
+      - name: Run tests
+        run: cargo test --release --target ${{ matrix.toolchain }}
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: electronpy-${{ matrix.toolchain }}
+          path: target/${{ matrix.toolchain }}/release/electronpy.exe

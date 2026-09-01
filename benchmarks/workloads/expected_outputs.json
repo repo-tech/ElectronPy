@@ -1,0 +1,12 @@
+{
+  "arithmetic.py": "15150",
+  "branching.py": "1",
+  "comparisons.py": "True\nFalse\nTrue",
+  "function_calls.py": "12",
+  "integer_loops.py": "4999950000",
+  "list_indexing.py": "80",
+  "list_iteration.py": "15",
+  "mixed_arithmetic_control_flow.py": "85",
+  "nested_loops.py": "2025",
+  "recursion.py": "3628800"
+}
