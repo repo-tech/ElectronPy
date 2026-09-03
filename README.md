@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# pyvolt
-=======
 # ElectronPy
 
 Version: 0.0.1
